@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout,authenticate
+from .forms import TaskForm
 #Respuesta HTTP
 #from django.http import HttpResponse
 # Create your views here.
@@ -42,6 +43,24 @@ def signup(request):
 
 def tasks(request):
     return render(request,'tasks.html')
+
+def create_task(request):
+    if request.method == 'GET':
+        
+        return render(request, 'create_task.html',{
+            'form':TaskForm
+        })
+    else:
+        
+        #print(request.POST)
+        form = TaskForm(request.POST)
+        #print(form)
+        #guardar datos
+        new_task = form.save(commit=False)
+        print(new_task)
+        return render(request, 'create_task.html',{
+            'form':TaskForm
+        })
 
 def signout(request):
     logout(request)
