@@ -4,4 +4,16 @@
 <h1> Tasks </h1>
 
 
+<ul>
+    
+    {% for task in  tasks %}
+    <li>{{task.title}}</li>
+    <p>{{task.description}}</p>
+    <p>{{task.user.username}}</p>
+    <p>{{task.important}}</p>
+    {% endfor %}
+
+</ul>
+    
+
 {% endblock content %}

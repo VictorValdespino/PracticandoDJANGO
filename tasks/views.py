@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout,authenticate
 from .forms import TaskForm 
+from .models import Task
 #Respuesta HTTP
 #from django.http import HttpResponse
 # Create your views here.
@@ -42,7 +43,11 @@ def signup(request):
         })
 
 def tasks(request):
-    return render(request,'tasks.html')
+    #CONSULTA
+    #trae todos los Objetos
+    #tasks = Task.objects.all()
+    tasks = Task.objects.filter(user=request.user, datecompleted__isnull=True)
+    return render(request,'tasks.html', {'tasks':tasks})
 
 def create_task(request):
     if request.method == 'GET':
@@ -51,17 +56,21 @@ def create_task(request):
             'form':TaskForm
         })
     else:
-        
-        #print(request.POST)
-        form = TaskForm(request.POST)
-        #print(form)
-        #guardar datos
-        new_task = form.save(commit=False)
-        print(new_task)
-        return render(request, 'create_task.html',{
-            'form':TaskForm
-        })
-
+        try:
+            #print(request.POST)
+            form = TaskForm(request.POST)
+            #print(form)
+            #guardar datos
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+            print(new_task)
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'create_task.html',{
+            'form':TaskForm,
+            'error':'INGRESA datos VALIDOS'
+            })
 def signout(request):
     logout(request)
     return redirect('home')
