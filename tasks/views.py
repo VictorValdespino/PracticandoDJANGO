@@ -75,9 +75,18 @@ def create_task(request):
 def task_detail(request,task_id):
     #Busca por id
     #task = Task.objects.get(pk=task_id)
-    task = get_object_or_404(Task, pk=task_id)
-    #print(task_id)
-    return render(request,'task_detail.html',{'task':task})
+    if request.method == 'GET':
+        
+        task = get_object_or_404(Task, pk=task_id)
+        form = TaskForm(instance=task)
+        #print(task_id)
+        return render(request,'task_detail.html',{'task':task, 'form':form})
+    else:
+        
+        task = get_object_or_404(Task, pk=task_id)
+        form = TaskForm(request.POST, instance=task)
+        form.save()
+        return redirect('tasks')
 
 def signout(request):
     logout(request)
